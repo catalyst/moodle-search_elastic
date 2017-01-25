@@ -1,0 +1,58 @@
+<?php
+namespace Aws\Emr;
+
+use Aws\AwsClient;
+
+/**
+ * This client is used to interact with the **Amazon Elastic MapReduce (Amazon EMR)** service.
+ *
+ * @method \Aws\Result addInstanceGroups(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise addInstanceGroupsAsync(array $args = [])
+ * @method \Aws\Result addJobFlowSteps(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise addJobFlowStepsAsync(array $args = [])
+ * @method \Aws\Result addTags(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise addTagsAsync(array $args = [])
+ * @method \Aws\Result cancelSteps(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise cancelStepsAsync(array $args = [])
+ * @method \Aws\Result createSecurityConfiguration(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise createSecurityConfigurationAsync(array $args = [])
+ * @method \Aws\Result deleteSecurityConfiguration(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise deleteSecurityConfigurationAsync(array $args = [])
+ * @method \Aws\Result describeCluster(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise describeClusterAsync(array $args = [])
+ * @method \Aws\Result describeJobFlows(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise describeJobFlowsAsync(array $args = [])
+ * @method \Aws\Result describeSecurityConfiguration(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise describeSecurityConfigurationAsync(array $args = [])
+ * @method \Aws\Result describeStep(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise describeStepAsync(array $args = [])
+ * @method \Aws\Result listBootstrapActions(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise listBootstrapActionsAsync(array $args = [])
+ * @method \Aws\Result listClusters(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise listClustersAsync(array $args = [])
+ * @method \Aws\Result listInstanceGroups(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise listInstanceGroupsAsync(array $args = [])
+ * @method \Aws\Result listInstances(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise listInstancesAsync(array $args = [])
+ * @method \Aws\Result listSecurityConfigurations(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise listSecurityConfigurationsAsync(array $args = [])
+ * @method \Aws\Result listSteps(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise listStepsAsync(array $args = [])
+ * @method \Aws\Result modifyInstanceGroups(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise modifyInstanceGroupsAsync(array $args = [])
+ * @method \Aws\Result putAutoScalingPolicy(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise putAutoScalingPolicyAsync(array $args = [])
+ * @method \Aws\Result removeAutoScalingPolicy(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise removeAutoScalingPolicyAsync(array $args = [])
+ * @method \Aws\Result removeTags(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise removeTagsAsync(array $args = [])
+ * @method \Aws\Result runJobFlow(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise runJobFlowAsync(array $args = [])
+ * @method \Aws\Result setTerminationProtection(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise setTerminationProtectionAsync(array $args = [])
+ * @method \Aws\Result setVisibleToAllUsers(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise setVisibleToAllUsersAsync(array $args = [])
+ * @method \Aws\Result terminateJobFlows(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise terminateJobFlowsAsync(array $args = [])
+ */
+class EmrClient extends AwsClient {}

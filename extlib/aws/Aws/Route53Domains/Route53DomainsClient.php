@@ -1,0 +1,56 @@
+<?php
+namespace Aws\Route53Domains;
+
+use Aws\AwsClient;
+
+/**
+ * This client is used to interact with the **Amazon Route 53 Domains** service.
+ *
+ * @method \Aws\Result checkDomainAvailability(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise checkDomainAvailabilityAsync(array $args = [])
+ * @method \Aws\Result deleteTagsForDomain(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise deleteTagsForDomainAsync(array $args = [])
+ * @method \Aws\Result disableDomainAutoRenew(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise disableDomainAutoRenewAsync(array $args = [])
+ * @method \Aws\Result disableDomainTransferLock(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise disableDomainTransferLockAsync(array $args = [])
+ * @method \Aws\Result enableDomainAutoRenew(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise enableDomainAutoRenewAsync(array $args = [])
+ * @method \Aws\Result enableDomainTransferLock(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise enableDomainTransferLockAsync(array $args = [])
+ * @method \Aws\Result getContactReachabilityStatus(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise getContactReachabilityStatusAsync(array $args = [])
+ * @method \Aws\Result getDomainDetail(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise getDomainDetailAsync(array $args = [])
+ * @method \Aws\Result getDomainSuggestions(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise getDomainSuggestionsAsync(array $args = [])
+ * @method \Aws\Result getOperationDetail(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise getOperationDetailAsync(array $args = [])
+ * @method \Aws\Result listDomains(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise listDomainsAsync(array $args = [])
+ * @method \Aws\Result listOperations(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise listOperationsAsync(array $args = [])
+ * @method \Aws\Result listTagsForDomain(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise listTagsForDomainAsync(array $args = [])
+ * @method \Aws\Result registerDomain(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise registerDomainAsync(array $args = [])
+ * @method \Aws\Result renewDomain(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise renewDomainAsync(array $args = [])
+ * @method \Aws\Result resendContactReachabilityEmail(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise resendContactReachabilityEmailAsync(array $args = [])
+ * @method \Aws\Result retrieveDomainAuthCode(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise retrieveDomainAuthCodeAsync(array $args = [])
+ * @method \Aws\Result transferDomain(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise transferDomainAsync(array $args = [])
+ * @method \Aws\Result updateDomainContact(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise updateDomainContactAsync(array $args = [])
+ * @method \Aws\Result updateDomainContactPrivacy(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise updateDomainContactPrivacyAsync(array $args = [])
+ * @method \Aws\Result updateDomainNameservers(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise updateDomainNameserversAsync(array $args = [])
+ * @method \Aws\Result updateTagsForDomain(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise updateTagsForDomainAsync(array $args = [])
+ * @method \Aws\Result viewBilling(array $args = [])
+ * @method \GuzzleHttpv6\Promise\Promise viewBillingAsync(array $args = [])
+ */
+class Route53DomainsClient extends AwsClient {}
