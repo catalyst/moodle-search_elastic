@@ -82,7 +82,7 @@ By default the Elasticsearch service is available on: `http://localhost:9200`
 ## Azure Elasticsearch Setup
 To use this plugin first you will need to setup an Elaticsearch service.
 
-To user Microsoft Azure to provide an Elasticsearch service for Moodle:
+To use Microsoft Azure to provide an Elasticsearch service for Moodle:
 1. Create a Microsoft Azure account: [Account creation page] (https://azure.microsoft.com/en-in/free/)
 2. Create a Linux virtual machine and connect to virtual machine: [Azure Linux virtual machine setup guide] (https://docs.microsoft.com/en-us/azure/virtual-machines/linux/quick-create-portal)
 3. Setup an Elasticsearch service:
