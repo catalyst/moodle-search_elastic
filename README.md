@@ -83,15 +83,16 @@ By default the Elasticsearch service is available on: `http://localhost:9200`
 To use this plugin first you will need to setup an Elaticsearch service.
 
 To use Microsoft Azure to provide an Elasticsearch service for Moodle:
-1. Create a Microsoft Azure account: [Account creation page] (https://azure.microsoft.com/en-in/free/)
-2. Create a Linux virtual machine and connect to virtual machine: [Azure Linux virtual machine setup guide] (https://docs.microsoft.com/en-us/azure/virtual-machines/linux/quick-create-portal)
+1. Create a Microsoft Azure account: [Account creation page](https://azure.microsoft.com/en-in/free/)
+2. Create a Linux virtual machine and connect to virtual machine: [Azure Linux virtual machine setup guide](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/quick-create-portal)
 3. Setup an Elasticsearch service:
-* Elasticsearch requires Java as a prerequisite, to install Java:
+
+Elasticsearch requires Java as a prerequisite, to install Java:
 <pre><code>
 sudo apt-get install default-jre default-jdk
 </pre></code>
 
-* Once Java is installed, the following commands will install and start Elasticsearch.
+Once Java is installed, the following commands will install and start Elasticsearch.
 <pre><code>
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.5.0.deb
 sudo dpkg -i elasticsearch-5.5.0.deb
@@ -99,7 +100,7 @@ sudo update-rc.d elasticsearch defaults
 sudo service elasticsearch start
 </pre></code>
 
-* A quick test can be performed by running the following from the command line.
+A quick test can be performed by running the following from the command line.
 <pre><code>
 curl -X GET 'http://localhost:9200'
 </pre></code>
@@ -121,7 +122,6 @@ The output should look something like:
 }
 
 </pre></code>
-
 
 ## AWS Elasticsearch Setup
 To use this plugin first you will need to setup an Elaticsearch service.
