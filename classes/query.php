@@ -373,6 +373,7 @@ class query  {
 
         // Add query text.
         if ($filters->q != '*') {
+            $filters->q = $this->escape_reserved_characters($filters->q);
             $q = $this->construct_q($filters->q);
         } else {
             $q = $this->construct_q_all();
@@ -470,5 +471,18 @@ class query  {
         }
 
         return $usercontexts;
+    }
+
+    /**
+     * Search backend needs these special characters to be escaped.
+     * @param string $querystring
+     * @return string|string[]
+     */
+    private function escape_reserved_characters(string $querystring) {
+        $reservedchars = explode(' ', '+ - = && || > < ! ( ) { } [ ] ^ " ~ * ? : \ /');
+        $reservedcharsreplace = array_map(function ($reservedchar) {
+            return stripslashes("\\\\" . $reservedchar);
+        }, $reservedchars);
+        return str_replace($reservedchars, $reservedcharsreplace, $querystring);
     }
 }
