@@ -1,9 +1,9 @@
-name: Run all tests for moodle 35 to 39
+name: ci
 
 on: [push, pull_request]
 
 jobs:
-  workflow_group_35_to_39_ci:
+  test:
     uses: catalyst/catalyst-moodle-workflows/.github/workflows/group-35-to-39-ci.yml@main
     with:
       extra_plugin_runners: 'moodle-plugin-ci add-plugin catalyst/moodle-local_aws'
