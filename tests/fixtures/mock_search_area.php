@@ -16,8 +16,6 @@
 
 namespace core_mocksearch\search;
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Component implementing search for testing purposes.
  *

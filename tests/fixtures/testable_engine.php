@@ -24,8 +24,6 @@
 
 namespace search_elastic;
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Elasticsearch engine.
  *
