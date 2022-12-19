@@ -17,7 +17,8 @@ This plugin currently supports Moodle:
 
 | Moodle version      | Branch               |
 | ------------------- | -------------------- |
-| Moodle 3.10 to 3.11 | MOODLE_310_STABLE    |
+| Moodle 3.11         | MOODLE_311_STABLE    |
+| Moodle 3.10         | MOODLE_310_STABLE    |
 | Moodle 3.5 to 3.9   | master               |
 
 ## Elasticsearch Version Support
