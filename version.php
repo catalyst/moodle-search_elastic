@@ -32,4 +32,4 @@ $plugin->maturity  = MATURITY_STABLE;
 $plugin->dependencies = array(
         'local_aws' => 2020061500
 );
-$plugin->supported = [310];      // A range of branch numbers of supported moodle versions.
+$plugin->supported = [310, 310];      // A range of branch numbers of supported moodle versions.
