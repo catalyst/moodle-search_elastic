@@ -30,6 +30,6 @@ $plugin->requires = 2016052304;
 $plugin->component = 'search_elastic';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->dependencies = array(
-        'local_aws' => 2020061500
+        'local_aws' => 2023010900,
 );
 $plugin->supported = [35, 39];        // A range of branch numbers of supported moodle versions.

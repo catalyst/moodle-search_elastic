@@ -24,6 +24,8 @@
 
 namespace search_elastic;
 
+use local_aws\local\guzzle_helper;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/local/aws/sdk/aws-autoloader.php');
@@ -45,6 +47,9 @@ class esrequest {
      */
     private $config = null;
 
+    /** @var \GuzzleHttp\Client $client A guzzle client. */
+    private $client;
+
     /**
      * Initialises the search engine configuration.
      *
@@ -57,67 +62,12 @@ class esrequest {
         $this->config = get_config('search_elastic');
         $this->signing = (isset($this->config->signing) ? (bool)$this->config->signing : false);
 
-        // Allow the caller to instansite the Guzzle client
-        // with a custom handler.
+        // Allow the caller to instantiate the Guzzle client with a custom handler.
+        $config = [];
         if ($handler) {
-            $this->client = new \GuzzleHttp\Client(['handler' => $handler]);
-        } else {
-            $this->client = new \GuzzleHttp\Client();
+            $config['handler'] = $handler;
         }
-    }
-
-    /**
-     * Constructs the Guzzle Proxy settings array
-     * based on Moodle's server proxy admin settings.
-     *
-     * @return array $proxy Proxy settings for Guzzle to use.
-     */
-    private function proxyconstruct() {
-        global $CFG;
-        $proxy = array();
-        $options = array();
-        $protocol = 'tcp';
-        $auth = '';
-        $server = '';
-        $uri = '';
-
-        if (! empty ( $CFG->proxyhost )) {
-            // Set the server details.
-            if (empty ( $CFG->proxyport )) {
-                $server = $CFG->proxyhost;
-            } else {
-                $server = $CFG->proxyhost . ':' . $CFG->proxyport;
-            }
-
-            // Set the authentication details.
-            if (! empty ( $CFG->proxyuser ) and ! empty ( $CFG->proxypassword )) {
-                $auth = $CFG->proxyuser . ':' . $CFG->proxypassword . '@';
-            }
-
-            // Set the proxy type.
-            if (! empty ( $CFG->proxytype ) && $CFG->proxytype == 'SOCKS5') {
-                $protocol = 'socks5';
-            }
-
-            // Construct proxy URI.
-            $uri = $protocol . '://' . $auth . $server;
-
-            // Populate proxy options array.
-            $options['http'] = $uri;
-            $options['https'] = $uri;
-
-            // Set excluded domains.
-            if (! empty ($CFG->proxybypass) ) {
-                $nospace = preg_replace('/\s/', '', $CFG->proxybypass);
-                $options['no'] = explode(',', $nospace);
-            }
-
-            // Finally populate proxy settings array.
-            $proxy['proxy'] = $options;
-
-        }
-
-        return $proxy;
+        $this->client = guzzle_helper::configure_client_proxy(new \GuzzleHttp\Client($config));
     }
 
     /**
@@ -160,12 +110,11 @@ class esrequest {
      * response.
      *
      * @param \GuzzleHttp\Psr7\Request $psr7request
-     * @param array $proxy
      * @return \GuzzleHttp\Psr7\Response
      */
-    private function http_action($psr7request, $proxy) {
+    private function http_action($psr7request) {
         try {
-            $response = $this->client->send($psr7request, $proxy);
+            $response = $this->client->send($psr7request);
         } catch (\GuzzleHttp\Exception\BadResponseException $e) {
             $response = $e->getResponse();
         } catch (\GuzzleHttp\Exception\GuzzleException $e) {
@@ -184,13 +133,12 @@ class esrequest {
      */
     public function get($url) {
         $psr7request = new \GuzzleHttp\Psr7\Request('GET', $url);
-        $proxy = $this->proxyconstruct();
 
         if ($this->signing) {
             $psr7request = $this->signrequest($psr7request);
         }
 
-        $response = $this->http_action($psr7request, $proxy);
+        $response = $this->http_action($psr7request);
 
         return $response;
 
@@ -206,13 +154,12 @@ class esrequest {
     public function put($url, $params=null) {
         $headers = ['content-type' => 'application/json'];
         $psr7request = new \GuzzleHttp\Psr7\Request('PUT', $url, $headers, $params);
-        $proxy = $this->proxyconstruct();
 
         if ($this->signing) {
             $psr7request = $this->signrequest($psr7request);
         }
 
-        $response = $this->http_action($psr7request, $proxy);
+        $response = $this->http_action($psr7request);
 
         return $response;
 
@@ -227,13 +174,12 @@ class esrequest {
     public function post($url, $params) {
         $headers = ['content-type' => 'application/json'];
         $psr7request = new \GuzzleHttp\Psr7\Request('POST', $url, $headers, $params);
-        $proxy = $this->proxyconstruct();
 
         if ($this->signing) {
             $psr7request = $this->signrequest($psr7request);
         }
 
-        $response = $this->http_action($psr7request, $proxy);
+        $response = $this->http_action($psr7request);
 
         return $response;
 
@@ -257,9 +203,8 @@ class esrequest {
         ]);
 
         $psr7request = new \GuzzleHttp\Psr7\Request('POST', $url, $headers, $multipart);
-        $proxy = $this->proxyconstruct();
 
-        $response = $this->http_action($psr7request, $proxy);
+        $response = $this->http_action($psr7request);
 
         return $response;
 
@@ -273,13 +218,12 @@ class esrequest {
      */
     public function delete($url) {
         $psr7request = new \GuzzleHttp\Psr7\Request('DELETE', $url);
-        $proxy = $this->proxyconstruct();
 
         if ($this->signing) {
             $psr7request = $this->signrequest($psr7request);
         }
 
-        $response = $this->http_action($psr7request, $proxy);
+        $response = $this->http_action($psr7request);
 
         return $response;
 
