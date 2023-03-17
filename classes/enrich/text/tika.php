@@ -100,8 +100,8 @@ class tika extends base_enrich {
         $url = '';
         // Check if we have a valid set of config.
         if (! empty($this->config->tikahostname) && ! empty($this->config->tikaport)) {
-            $port = $this->config->port;
-            $hostname = rtrim($this->config->hostname, "/");
+            $port = $this->config->tikaport;
+            $hostname = rtrim($this->config->tikahostname, "/");
             $url = $hostname . ':' . $port;
         }
 
@@ -138,8 +138,8 @@ class tika extends base_enrich {
     /**
      * Use tika to extract text from file.
      *
-     * @param file $file
-     * @param esrequest\client $client client
+     * @param \stored_file $file
+     * @param \search_elastic\esrequest $client client
      * @return string|boolean
      */
     public function extract_text($file, $client) {
@@ -203,4 +203,3 @@ class tika extends base_enrich {
     }
 
 }
-
