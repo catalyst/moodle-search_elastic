@@ -42,6 +42,8 @@ Wildcard characters (\'*\' or \'?\' ) may be used to represent characters in the
 <br>
 For more information, follow this link: {$a}';
 $string['complexhelpurl'] = 'https://lucene.apache.org/core/2_9_4/queryparsersyntax.html';
+$string['connecttimeout'] = 'Connect timeout (seconds)';
+$string['connecttimeout_help'] = 'Guzzle connection timeout. Use 0 to disable. See https://docs.guzzlephp.org/en/stable/request-options.html#connect-timeout';
 $string['enrichdesc'] = 'Global Search can enrich the indexed data used in search by extracting text and other data from files.
 The data extracted from files in Moodle is controlled by the following groups of settings.';
 $string['enrichsettings'] = 'Data enrichment settings';

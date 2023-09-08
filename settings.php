@@ -48,6 +48,9 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configcheckbox('search_elastic/wildcardstart', get_string('wildcardstart', 'search_elastic'),
         get_string ('wildcardstart_help', 'search_elastic'), 0));
 
+    $settings->add(new admin_setting_configtext('search_elastic/connecttimeout', get_string('connecttimeout', 'search_elastic'),
+        get_string('connecttimeout_help', 'search_elastic'), 5, PARAM_INT));
+
     $settings->add(new admin_setting_heading('signingsettings', get_string('signingsettings', 'search_elastic'), ''));
     $settings->add(new admin_setting_configcheckbox('search_elastic/signing', get_string('signing', 'search_elastic'),
         get_string ('signing_help', 'search_elastic'), 0));
