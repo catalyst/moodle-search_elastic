@@ -123,49 +123,49 @@ class search_elastic_engine_testcase extends advanced_testcase {
     }
 
     /**
-     * Test check if Elasticsearch server is ready.
+     * Provides values to test_is_server_ready
+     *
+     * @return array
      */
-    public function test_is_server_ready() {
-        // Create a mock stack and queue a response.
-        $container = [];
-        $mock = new MockHandler([
-            new Response(200, ['Content-Type' => 'application/json'])
-        ]);
-
-        $stack = HandlerStack::create($mock);
-
-        // Reflection magic as we are directly testing a private method.
-        $method = new ReflectionMethod('\search_elastic\engine', 'is_server_ready');
-        $method->setAccessible(true); // Allow accessing of private method.
-        $proxy = $method->invoke(new \search_elastic\engine, $stack);
-
-        // Check the results.
-        $this->assertEquals(true, $proxy);
+    public function is_server_ready_provider(): array {
+        return [
+          '200' => [
+            'code' => 200,
+            'ok' => true
+          ],
+          '404' => [
+            'code' => 404,
+            'ok' => false
+          ]
+        ];
     }
 
     /**
      * Test check if Elasticsearch server is ready.
+     *
+     * @param int $code Simulated HTTP status code
+     * @param bool $expectedok If the server should be expected to be ready/ok.
+     * @dataProvider is_server_ready_provider
      */
-    public function test_is_server_ready_false() {
+    public function test_is_server_ready(int $code, bool $expectedok) {
         // Create a mock stack and queue a response.
-        $container = [];
         $mock = new MockHandler([
-            new Response(404, ['Content-Type' => 'application/json'])
+            new Response($code, ['Content-Type' => 'application/json'])
         ]);
 
         $stack = HandlerStack::create($mock);
 
-        // Reflection magic as we are directly testing a private method.
-        $method = new ReflectionMethod('\search_elastic\engine', 'is_server_ready');
-        $method->setAccessible(true); // Allow accessing of private method.
-        $proxy = $method->invoke(new \search_elastic\engine, $stack);
+        $engine = new \search_elastic\engine();
+        $status = $engine->is_server_ready($stack);
 
-        $expected = 'Elasticsearch endpoint unreachable';
-
-        // Check the results.
-        $this->assertEquals($expected, $proxy);
+        if ($expectedok) {
+            $this->assertTrue($status);
+        } else {
+            // Status should contain a string with the 404 code in it.
+            $this->assertTrue(is_string($status));
+            $this->assertTrue(strpos($status, '404') != false);
+        }
     }
-
 
     /**
      * Test deleting docs by type id.

@@ -42,6 +42,8 @@ Wildcard characters (\'*\' or \'?\' ) may be used to represent characters in the
 <br>
 For more information, follow this link: {$a}';
 $string['complexhelpurl'] = 'https://lucene.apache.org/core/2_9_4/queryparsersyntax.html';
+$string['connection:na'] = 'Server not configured';
+$string['connection:status'] = 'The configured elastic server at {$a->url} returned the status code {$a->status}';
 $string['connecttimeout'] = 'Connect timeout (seconds)';
 $string['connecttimeout_help'] = 'Guzzle connection timeout. Use 0 to disable. See https://docs.guzzlephp.org/en/stable/request-options.html#connect-timeout';
 $string['enrichdesc'] = 'Global Search can enrich the indexed data used in search by extracting text and other data from files.

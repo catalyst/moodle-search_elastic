@@ -108,7 +108,7 @@ class engine extends \core_search\engine {
      *
      * @return url|bool Returns url if succes or false on error.
      */
-    private function get_url() {
+    public function get_url() {
         $returnval = false;
 
         if (!empty($this->config->hostname) && !empty($this->config->port)) {
@@ -255,26 +255,42 @@ class engine extends \core_search\engine {
      * Is the Elasticsearch server endpoint configured in Moodle
      * and available.
      *
-     * @param object $stack The Guzzle client stack to use.
-     * @return true|string Returns true if all good or an error string.
+     * @param object|false $stack Optional custom Guzzle HTTP stack.
+     * @return string|bool true if server is ready, else error string.
      */
-    public function is_server_ready($stack=false) {
+    public function is_server_ready($stack = false) {
+        // Not configured yet.
+        if (empty($this->get_url())) {
+            return get_string('connection:na', 'search_elastic');
+        }
+
+        // Test a connection to the configured server.
+        $status = $this->get_server_status_code($stack);
+
+        if ($status !== 200) {
+            return get_string('connection:status', 'search_elastic', [
+              'url' => $this->get_url(),
+              'status' => $status
+            ]);
+        }
+
+        return true;
+    }
+
+    /**
+     * Tests connection to the server and returns the HTTP status code.
+     *
+     * @param object|false $stack Optional custom Guzzle HTTP stack.
+     * @return int HTTP response code.
+     */
+    public function get_server_status_code($stack = false): int {
         $url = $this->get_url();
-        $returnval = true;
         $client = new \search_elastic\esrequest($stack);
 
-        if (!$url) {
-            $returnval = get_string('noconfig', 'search_elastic');
-        } else {
-            $response = $client->get($url);
-            $responsecode = $response->getStatusCode();
-        }
+        $response = $client->get($url);
+        $responsecode = $response->getStatusCode();
 
-        if ($responsecode != 200) {
-            $returnval = get_string('noserver', 'search_elastic');
-        }
-
-        return $returnval;
+        return $responsecode;
     }
 
     /**
