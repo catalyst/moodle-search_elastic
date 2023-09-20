@@ -45,7 +45,7 @@ class rekognition extends base_enrich {
      *
      * @var array
      */
-    protected $acceptedmime = array(
+    protected $supported = array(
         'image/jpeg',
         'image/png'
     );

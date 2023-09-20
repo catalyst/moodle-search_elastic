@@ -44,6 +44,17 @@ Wildcard characters (\'*\' or \'?\' ) may be used to represent characters in the
 <br>
 For more information, follow this link: {$a}';
 $string['complexhelpurl'] = 'https://lucene.apache.org/core/2_9_4/queryparsersyntax.html';
+$string['elastic'] = 'Elastic cloud';
+$string['elastichostname'] = 'Elastic endpoint URL';
+$string['elastichostname_help'] = 'URL of Elastic cloud API end point';
+$string['elasticapikey'] = 'API key';
+$string['elasticapikey_help'] = 'Elastic API key for authorising requests';
+$string['elasticpipeline'] = 'Pipeline name';
+$string['elasticpipeline_help'] = 'Name of pipeline for text extraction';
+$string['elasticfield'] = 'Field name';
+$string['elasticfield_help'] = 'Configured field name for storing file content information';
+$string['elasticindex'] = 'Index name';
+$string['elasticindex_help'] = 'An index to store file processing results in';
 $string['enrichdesc'] = 'Global Search can enrich the indexed data used in search by extracting text and other data from files.
 The data extracted from files in Moodle is controlled by the following groups of settings.';
 $string['enrichsettings'] = 'Data enrichment settings';

@@ -49,6 +49,35 @@ if ($form->is_cancelled()) {
 
 // Build the page output.
 echo $OUTPUT->header();
+
+if (!empty($config->fileindexing) && !empty($config->fileindexselect)) {
+    $classname = $config->fileindexselect;
+    $processor = new $classname($config);
+
+    $fs = get_file_storage();
+
+    $record = new \stdClass();
+    $record->contextid = context_system::instance()->id;
+    $record->component = 'phpunit';
+    $record->filearea = 'test';
+    $record->itemid = 0;
+    $record->filepath = '/';
+    $record->filename = 'test.txt';
+
+    $fs = get_file_storage();
+    $file = $fs->create_file_from_string($record, 'Tika test.');
+    $text = $processor->analyze_file($file);
+
+    $file->delete();
+
+    if ($text == 'Tika test.') {
+        echo $OUTPUT->notification($processor->get_enrich_name() . ' Text extraction is working correctly.', 'success');
+    } else {
+        echo $OUTPUT->notification($processor->get_enrich_name() . ' Text extraction is not working correctly.', 'error');
+
+    }
+}
+
 echo $OUTPUT->heading(get_string('enrichsettings', 'search_elastic'));
 echo html_writer::div(get_string('enrichdesc', 'search_elastic'), 'enrich_description');
 echo html_writer::div($form->render(), 'form_container');

@@ -33,6 +33,12 @@ namespace search_elastic\enrich\base;
  */
 abstract class base_enrich {
 
+    /** Config object.
+     *
+     * @var mixed
+     */
+    protected $config;
+
     /**
      * The constructor for the class, will be overwritten in most cases.
      *

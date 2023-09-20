@@ -58,8 +58,13 @@ class esrequest {
      * @param \GuzzleHttp\HandlerStack $handler Optional custom Guzzle handler stack
      * @return void
      */
-    public function __construct($handler = false) {
-        $this->config = get_config('search_elastic');
+    public function __construct($handler = false, $config = false) {
+        if (empty($config) || !($config instanceof \stdClass)) {
+            $this->config = get_config('search_elastic');
+        } else {
+            $this->config = $config;
+        }
+
         $this->signing = (isset($this->config->signing) ? (bool)$this->config->signing : false);
 
         // Allow the caller to instantiate the Guzzle client with a custom handler.
@@ -95,9 +100,7 @@ class esrequest {
         $signer = new \Aws\Signature\SignatureV4('es', $this->config->region);
 
         // Sign your request.
-        $signedrequest = $signer->signRequest($request, $credentials);
-
-        return $signedrequest;
+        return $signer->signRequest($request, $credentials);
     }
 
     /**
@@ -140,20 +143,17 @@ class esrequest {
             $psr7request = $this->signrequest($psr7request);
         }
 
-        $response = $this->http_action($psr7request);
-
-        return $response;
-
+        return $this->http_action($psr7request);
     }
 
     /**
      * Process PUT requests to Elasticsearch.
      *
      * @param string $url
-     * @param array $params
+     * @param mixed $params
      * @return \GuzzleHttp\Psr7\Response
      */
-    public function put($url, $params=null) {
+    public function put($url, $params = null) {
         $headers = $this->get_authorization_header();
         $headers['content-type'] = 'application/json';
 
@@ -163,19 +163,16 @@ class esrequest {
             $psr7request = $this->signrequest($psr7request);
         }
 
-        $response = $this->http_action($psr7request);
-
-        return $response;
-
+        return $this->http_action($psr7request);
     }
 
     /**
      * Creates post API requests.
      * @param string $url
-     * @param unknown $params
+     * @param mixed $params
      * @return \Psr\Http\Message\ResponseInterface|NULL
      */
-    public function post($url, $params) {
+    public function post($url, $params = null) {
         $headers = $this->get_authorization_header();
         $headers['content-type'] = 'application/json';
 
@@ -185,10 +182,7 @@ class esrequest {
             $psr7request = $this->signrequest($psr7request);
         }
 
-        $response = $this->http_action($psr7request);
-
-        return $response;
-
+        return $this->http_action($psr7request);
     }
 
     /**
@@ -211,16 +205,13 @@ class esrequest {
 
         $psr7request = new \GuzzleHttp\Psr7\Request('POST', $url, $headers, $multipart);
 
-        $response = $this->http_action($psr7request);
-
-        return $response;
-
+        return $this->http_action($psr7request);
     }
 
     /**
      * Creates delete API requests.
      *
-     * @param unknown $url
+     * @param string $url
      * @return \Psr\Http\Message\ResponseInterface|NULL
      */
     public function delete($url) {
@@ -232,10 +223,7 @@ class esrequest {
             $psr7request = $this->signrequest($psr7request);
         }
 
-        $response = $this->http_action($psr7request);
-
-        return $response;
-
+        return $this->http_action($psr7request);
     }
 
     /**
