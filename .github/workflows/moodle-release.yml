@@ -13,7 +13,7 @@ on:
 
 jobs:
   workflow_group_35_to_39_release:
-    uses: catalyst/catalyst-moodle-workflows/.github/workflows/group-35-to-39-release.yml@main
+    uses: catalyst/catalyst-moodle-workflows/.github/workflows/moodle-39-release.yml@main
     with:
       plugin_name: search_elastic
       extra_plugin_runners: 'moodle-plugin-ci add-plugin catalyst/moodle-local_aws'
