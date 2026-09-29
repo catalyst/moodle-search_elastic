@@ -8,4 +8,4 @@ jobs:
     secrets: inherit
     with:
       disable_grunt: true
-      enable_composer_publish: false
+      enable_composer_publish: true
