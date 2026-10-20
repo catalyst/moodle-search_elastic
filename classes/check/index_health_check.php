@@ -24,9 +24,9 @@ use core\check\result;
 use moodle_url;
 
 /**
- * Health check for recent chunking-related errors.
+ * Elastic index health check.
  *
- * If chunking is disabled, this returns NA. If enabled, it queries the search_elastic_errors table
+ * Currently reports on recent chunking-related errors. If chunking is disabled, this returns NA. If enabled, it queries the search_elastic_errors table
  * for errors classified as TYPE_CHUNKING. If one or more chunking related errors are found, a WARNING
  * result is returned. Otherwise, the check reports OK.
  *
@@ -35,7 +35,7 @@ use moodle_url;
  * @copyright   2026 Monash University (http://www.monash.edu)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class chunking_status extends check {
+class index_health_check extends check {
     /**
      * Performs check and returns result.
      *
