@@ -23,6 +23,7 @@
  */
 
 use search_elastic\admin_setting_check;
+use search_elastic\admin_setting_course_custom_field_filter;
 use search_elastic\check\server_ready_check;
 use search_elastic\local\chunking\manager;
 
@@ -233,7 +234,41 @@ if ($hassiteconfig) {
         new moodle_url('/search/engine/elastic/errors.php')
     );
 
+    // SEMANTIC SEARCH SETTINGS.
+    $semanticsettings = new admin_settingpage(
+        'search_elastic_semanticsettings',
+        get_string('semanticsearchsettings', 'search_elastic')
+    );
+
+    $semanticsettings->add(new admin_setting_heading('basicsettings', get_string('basicsettings', 'search_elastic'), ''));
+    $semanticsettings->add(new admin_setting_configcheckbox(
+        'search_elastic/semanticsearchenabled',
+        get_string('enablesemanticsearch', 'search_elastic'),
+        get_string('enablesemanticsearch_desc', 'search_elastic'),
+        0
+    ));
+
+    $semanticsettings->add(new admin_setting_heading('semanticscopesettings', get_string('semanticscopesettings', 'search_elastic'), ''));
+    $semanticsettings->add(new admin_setting_configselect(
+        'search_elastic/semanticscopemode',
+        get_string('semanticscopemode', 'search_elastic'),
+        get_string('semanticscopemode_desc', 'search_elastic'),
+        'none',
+        [
+            'none' => get_string('semanticscopemode_none', 'search_elastic'),
+            'customfield' => get_string('semanticscopemode_customfield', 'search_elastic'),
+        ]
+    ));
+    $semanticsettings->add(new admin_setting_course_custom_field_filter(
+        'search_elastic/semanticcoursefilter',
+        get_string('semanticcoursefilter', 'search_elastic'),
+        get_string('semanticcoursefilter_desc', 'search_elastic'),
+        ''
+    ));
+    $semanticsettings->hide_if('search_elastic/semanticcoursefilter', 'search_elastic/semanticscopemode', 'neq', 'customfield');
+
     $ADMIN->add('search_elastic', $settings);
+    $ADMIN->add('search_elastic', $semanticsettings);
     $ADMIN->add('search_elastic', $enrichsettings);
     $ADMIN->add('search_elastic', $errorreport);
     $settings = null;
