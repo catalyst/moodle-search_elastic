@@ -252,7 +252,10 @@ if ($hassiteconfig) {
     $semanticsettings->add(new admin_setting_configselect(
         'search_elastic/semanticscopemode',
         get_string('semanticscopemode', 'search_elastic'),
-        get_string('semanticscopemode_desc', 'search_elastic'),
+        get_string('semanticscopemode_desc', 'search_elastic', html_writer::link(
+            new \core\url('/search/engine/elastic/semanticcourses.php'),
+            get_string('semanticcourseslink', 'search_elastic')
+        )),
         'none',
         [
             'none' => get_string('semanticscopemode_none', 'search_elastic'),
@@ -271,5 +274,12 @@ if ($hassiteconfig) {
     $ADMIN->add('search_elastic', $semanticsettings);
     $ADMIN->add('search_elastic', $enrichsettings);
     $ADMIN->add('search_elastic', $errorreport);
+    $ADMIN->add('search_elastic', new admin_externalpage(
+        'search_elastic_semanticcourses',
+        get_string('semanticcourses', 'search_elastic'),
+        new \core\url('/search/engine/elastic/semanticcourses.php'),
+        'moodle/site:config',
+        true
+    ));
     $settings = null;
 }
