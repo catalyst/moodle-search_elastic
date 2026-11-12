@@ -100,6 +100,8 @@ Without chunking:
 </ul>
 
 Enable this if you have large files (PDFs, presentations, data files) that need to be searchable.';
+$string['enablesemanticsearch'] = 'Enable semantic search';
+$string['enablesemanticsearch_desc'] = 'When enabled, semantic search will be available for this search engine.';
 $string['enrichdesc'] = 'Global Search can enrich the indexed data used in search by extracting text and other data from files.
 The data extracted from files in Moodle is controlled by the following groups of settings.';
 $string['enrichsettings'] = 'Data enrichment settings';
@@ -203,6 +205,16 @@ $string['searchmessage'] = 'Error message';
 $string['searchmessageplaceholder'] = 'Search in error messages...';
 $string['searchresultsinfo'] = 'Showing {$a->filtered} of {$a->total} total errors';
 $string['searchsettings'] = 'Search settings';
+$string['semanticcoursefilter'] = 'Course custom field conditions';
+$string['semanticcoursefilter_desc'] = 'Used when the scope mode is "Limit scope by course custom field". Limit semantic search to courses matching these course custom field conditions. Enter one condition per line as <code>shortname=value</code>, using the custom field shortname. A course must match every line. Leave empty to include all courses.';
+$string['semanticfilterinvalidline'] = 'Invalid condition "{$a}". Use the format shortname=value.';
+$string['semanticfilterunknownfield'] = 'Course custom field with shortname "{$a}" does not exist.';
+$string['semanticscopemode'] = 'Course scope';
+$string['semanticscopemode_customfield'] = 'Limit scope by course custom field';
+$string['semanticscopemode_desc'] = 'Choose whether semantic search is limited to a subset of courses.';
+$string['semanticscopemode_none'] = 'No scoping';
+$string['semanticscopesettings'] = 'Semantic scoping settings';
+$string['semanticsearchsettings'] = 'Semantic search settings';
 $string['sendsize'] = 'Request size';
 $string['sendsize_help'] = 'Some Elasticsearch providers such as AWS have a limit on how big the HTTP payload can be. Therefore we limit it to a size in bytes.';
 $string['signing'] = 'Enable request signing';
