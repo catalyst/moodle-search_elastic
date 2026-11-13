@@ -195,7 +195,7 @@ class engine extends \core_search\engine {
      * @return integer The Apache Lucene version.
      */
     public function get_es_lucene_version() {
-        return $this->get_es_version_details()->lucene_version;
+        return (int) $this->get_es_version_details()->lucene_version;
     }
 
     /**

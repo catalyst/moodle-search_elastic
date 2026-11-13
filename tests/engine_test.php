@@ -1521,4 +1521,47 @@ final class engine_test extends \advanced_testcase {
         }
         return $payload;
     }
+
+    /**
+     * Lucene versions as reported by servers.
+     *
+     * @return array
+     */
+    public static function lucene_version_provider(): array {
+        return [
+            'legacy 7' => ['7.7.3', 7, true],
+            'lucene 8' => ['8.11.1', 8, false],
+            'lucene 9' => ['9.12.0', 9, false],
+            'lucene 10 (OpenSearch 3)' => ['10.4.0', 10, false],
+        ];
+    }
+
+    /**
+     * The Lucene version is a numeric major version, so "10.x" is not treated as older than 8.
+     *
+     * @dataProvider lucene_version_provider
+     * @param string $reported
+     * @param int $expected
+     * @param bool $legacy
+     */
+    public function test_get_es_lucene_version(string $reported, int $expected, bool $legacy): void {
+        $this->resetAfterTest();
+        $engine = new class extends engine {
+            /** @var string */
+            public string $reported = '';
+
+            /**
+             * Stubbed server response.
+             *
+             * @return object
+             */
+            protected function get_es_version_details() {
+                return (object) ['lucene_version' => $this->reported];
+            }
+        };
+        $engine->reported = $reported;
+
+        $this->assertSame($expected, $engine->get_es_lucene_version());
+        $this->assertSame($legacy, $engine->get_es_lucene_version() < 8);
+    }
 }
