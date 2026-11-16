@@ -24,6 +24,7 @@
 
 use search_elastic\admin_setting_check;
 use search_elastic\admin_setting_course_custom_field_filter;
+use search_elastic\check\bedrock_ready_check;
 use search_elastic\check\server_ready_check;
 use search_elastic\local\chunking\manager;
 
@@ -241,11 +242,76 @@ if ($hassiteconfig) {
     );
 
     $semanticsettings->add(new admin_setting_heading('basicsettings', get_string('basicsettings', 'search_elastic'), ''));
+
+    // Makes a live AWS call, so only run it when viewing this page.
+    if ($ADMIN->fulltree && optional_param('section', null, PARAM_TEXT) == 'search_elastic_semanticsettings') {
+        $semanticsettings->add(new admin_setting_check(
+            'search_elastic/bedrockconnectiontest',
+            get_string('bedrockconnectiontest', 'search_elastic'),
+            new bedrock_ready_check()
+        ));
+    }
+
     $semanticsettings->add(new admin_setting_configcheckbox(
         'search_elastic/semanticsearchenabled',
         get_string('enablesemanticsearch', 'search_elastic'),
         get_string('enablesemanticsearch_desc', 'search_elastic'),
         0
+    ));
+
+    $semanticsettings->add(new admin_setting_configselect(
+        'search_elastic/bedrockmodelid',
+        get_string('bedrockmodelid', 'search_elastic'),
+        get_string('bedrockmodelid_help', 'search_elastic'),
+        'amazon.titan-embed-text-v2:0',
+        [
+            'amazon.titan-embed-text-v2:0' => 'Amazon Titan Text Embeddings v2',
+            'amazon.titan-embed-text-v1' => 'Amazon Titan Text Embeddings v1',
+            'cohere.embed-english-v3' => 'Cohere Embed English v3',
+            'cohere.embed-multilingual-v3' => 'Cohere Embed Multilingual v3',
+        ]
+    ));
+
+    $semanticsettings->add(new admin_setting_configtext(
+        'search_elastic/bedrockrolearn',
+        get_string('bedrockrolearn', 'search_elastic'),
+        get_string('bedrockrolearn_help', 'search_elastic'),
+        '',
+        PARAM_TEXT
+    ));
+
+    $semanticsettings->add(new admin_setting_configtext(
+        'search_elastic/bedrockregion',
+        get_string('bedrockregion', 'search_elastic'),
+        get_string('bedrockregion_help', 'search_elastic'),
+        'ap-southeast-2',
+        PARAM_TEXT
+    ));
+
+    $semanticsettings->add(new admin_setting_configselect(
+        'search_elastic/bedrockdimension',
+        get_string('bedrockdimension', 'search_elastic'),
+        get_string('bedrockdimension_help', 'search_elastic'),
+        1024,
+        [256 => 256, 512 => 512, 1024 => 1024]
+    ));
+
+
+
+    $semanticsettings->add(new admin_setting_configtext(
+        'search_elastic/hybridkeywordweight',
+        get_string('hybridkeywordweight', 'search_elastic'),
+        get_string('hybridkeywordweight_help', 'search_elastic'),
+        0.3,
+        PARAM_FLOAT
+    ));
+
+    $semanticsettings->add(new admin_setting_configtext(
+        'search_elastic/hybridsemanticweight',
+        get_string('hybridsemanticweight', 'search_elastic'),
+        get_string('hybridsemanticweight_help', 'search_elastic'),
+        0.7,
+        PARAM_FLOAT
     ));
 
     $semanticsettings->add(new admin_setting_heading('semanticscopesettings', get_string('semanticscopesettings', 'search_elastic'), ''));
@@ -274,6 +340,11 @@ if ($hassiteconfig) {
     $ADMIN->add('search_elastic', $semanticsettings);
     $ADMIN->add('search_elastic', $enrichsettings);
     $ADMIN->add('search_elastic', $errorreport);
+    $ADMIN->add('search_elastic', new admin_externalpage(
+        'search_elastic_knn_test',
+        get_string('knnconnectiontest', 'search_elastic'),
+        new \core\url('/search/engine/elastic/knn_test.php')
+    ));
     $ADMIN->add('search_elastic', new admin_externalpage(
         'search_elastic_semanticcourses',
         get_string('semanticcourses', 'search_elastic'),

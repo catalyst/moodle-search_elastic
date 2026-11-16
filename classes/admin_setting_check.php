@@ -86,6 +86,10 @@ class admin_setting_check extends admin_setting {
                 $out = $OUTPUT->notification($out, notification::NOTIFY_ERROR, false);
                 break;
 
+            case result::WARNING:
+                $out = $OUTPUT->notification($out, notification::NOTIFY_WARNING, false);
+                break;
+
             case result::OK:
                 $out = $OUTPUT->notification($out, notification::NOTIFY_SUCCESS, false);
                 break;
