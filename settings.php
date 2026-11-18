@@ -346,6 +346,11 @@ if ($hassiteconfig) {
         new \core\url('/search/engine/elastic/knn_test.php')
     ));
     $ADMIN->add('search_elastic', new admin_externalpage(
+        'search_elastic_semanticsetup',
+        get_string('semanticsetup', 'search_elastic'),
+        new \core\url('/search/engine/elastic/semanticsetup.php')
+    ));
+    $ADMIN->add('search_elastic', new admin_externalpage(
         'search_elastic_semanticcourses',
         get_string('semanticcourses', 'search_elastic'),
         new \core\url('/search/engine/elastic/semanticcourses.php'),
