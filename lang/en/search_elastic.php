@@ -217,6 +217,7 @@ $string['retryallfailed'] = 'Retry all failed';
 $string['retryallfailed_desc'] = 'Queue background task to reattempt indexing for failed documents.';
 $string['retryallqueued'] = 'Background task queued to retry all errors.';
 $string['retrycount'] = 'Retry count';
+$string['semanticsynctask'] = 'Synchronise the semantic search index';
 $string['retryerrorstask'] = 'Retry Elasticsearch errors';
 $string['retrysingleadhoc'] = 'Background task queued to retry the error.';
 $string['searcharea'] = 'Search area';
@@ -243,6 +244,7 @@ $string['semanticcoursessavedconfig'] = 'Courses matching every saved condition:
 $string['semanticdimensionunsupported'] = 'The embedding dimension {$a->dimension} is not supported by {$a->model}.';
 $string['semanticfilterinvalidline'] = 'Invalid condition "{$a}". Use the format shortname=value.';
 $string['semanticfilterunknownfield'] = 'Course custom field with shortname "{$a}" does not exist.';
+$string['semanticindexfail'] = 'Failed to add the document to the semantic index: {$a}';
 $string['semanticmodelunsupported'] = 'The embedding model {$a} is not supported yet. Select Amazon Titan Text Embeddings v2.';
 $string['semanticscopemode'] = 'Course scope';
 $string['semanticscopemode_customfield'] = 'Limit scope by course custom field';

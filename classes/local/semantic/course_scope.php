@@ -95,4 +95,19 @@ class course_scope {
 
         return [implode(' AND ', $clauses), $params];
     }
+
+    /**
+     * Ids of the courses whose content belongs in the semantic index. The front page is never included.
+     *
+     * @return int[]
+     */
+    public static function get_courseids(): array {
+        global $DB;
+
+        [$sql, $params] = self::get_sql('c');
+        $where = 'c.id <> :siteid' . ($sql === '' ? '' : " AND {$sql}");
+        $params['siteid'] = SITEID;
+
+        return array_map('intval', array_keys($DB->get_records_sql("SELECT c.id FROM {course} c WHERE {$where}", $params)));
+    }
 }

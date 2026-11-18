@@ -69,6 +69,9 @@ class provisioner {
     /** @var string|null */
     private ?string $modelid = null;
 
+    /** @var client */
+    private client $http;
+
     /**
      * Constructor.
      *
@@ -80,13 +83,14 @@ class provisioner {
      * @param string $rolearn Role OpenSearch assumes to invoke Bedrock.
      */
     public function __construct(
-        private esrequest $client,
-        private string $baseurl,
+        esrequest $client,
+        string $baseurl,
         private string $index,
         private embedding_model $model,
         private string $region,
         private string $rolearn
     ) {
+        $this->http = new client($client, $baseurl);
     }
 
     /**
@@ -411,16 +415,7 @@ class provisioner {
      * @return array [HTTP status code, decoded JSON body or an empty array].
      */
     private function request(string $method, string $path, ?array $body = null): array {
-        $url = $this->baseurl . $path;
-        $json = $body === null ? '' : json_encode($body);
-        $response = match ($method) {
-            'GET' => $this->client->get($url),
-            'PUT' => $this->client->put($url, $json),
-            'POST' => $this->client->post($url, $json),
-            'DELETE' => $this->client->delete($url),
-        };
-
-        return [$response->getStatusCode(), json_decode((string) $response->getBody(), true) ?? []];
+        return $this->http->request($method, $path, $body);
     }
 
     /**

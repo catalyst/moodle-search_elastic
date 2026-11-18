@@ -33,6 +33,7 @@ namespace search_elastic;
 
 use search_elastic\local\chunking\manager;
 use search_elastic\local\chunking\fixed_size;
+use search_elastic\local\semantic\indexer;
 use search_elastic\local\service\error_service;
 use stdClass;
 use Exception;
@@ -59,6 +60,11 @@ class engine extends \core_search\engine {
      * @var int The current size of the payload object.
      */
     protected $payloadsize = 0;
+
+    /**
+     * @var indexer|null Writer for the semantic index.
+     */
+    private ?indexer $semanticindexer = null;
 
     /**
      * @var int Count of how many parent documents are in current payload.
@@ -88,6 +94,40 @@ class engine extends \core_search\engine {
     public function __construct() {
         parent::__construct();
         $this->config = (object)array_merge($this->configdefaults, (array)$this->config);
+    }
+
+    /**
+     * Get the semantic index writer, or null when semantic search is off.
+     *
+     * @return indexer|null
+     */
+    public function get_semantic_indexer(): ?indexer {
+        if (!indexer::is_enabled() || !($url = $this->get_url())) {
+            return null;
+        }
+        $this->semanticindexer ??= new indexer(new esrequest(), $url, $this->config->index, (int) $this->config->sendsize);
+
+        return $this->semanticindexer;
+    }
+
+    /**
+     * Queue a document, or its chunks, for the semantic index. Never affects the keyword index.
+     *
+     * @param array $docdata Document as sent to the keyword index.
+     * @param array $contentchunks Chunks from the chunking strategy; more than one means the document is chunked.
+     */
+    private function add_to_semantic_index(array $docdata, array $contentchunks = []): void {
+        if (!($indexer = $this->get_semantic_indexer())) {
+            return;
+        }
+        $docs = [$docdata];
+        if (count($contentchunks) > 1) {
+            $docs = [];
+            foreach (array_values($contentchunks) as $i => $chunk) {
+                $docs[] = $this->create_chunk_data($docdata, $i + 1, count($contentchunks), $chunk);
+            }
+        }
+        $indexer->add($docs);
     }
 
     /**
@@ -429,6 +469,8 @@ class engine extends \core_search\engine {
      * @return bool
      */
     public function delete_by_original_id(string $originaldocid): bool {
+        $this->get_semantic_indexer()?->delete_by_original_id($originaldocid);
+
         return $this->delete_by_query(
             ['term' => ['original_id' => $originaldocid]],
             "original document {$originaldocid}"
@@ -779,6 +821,8 @@ class engine extends \core_search\engine {
                 $numdocsignored += $ignored;
             }
 
+            $this->add_to_semantic_index($docdata, $contentchunks);
+
             if ($options['indexfiles']) {
                 $searcharea->attach_files($document);
                 $this->process_document_files($document);
@@ -786,6 +830,7 @@ class engine extends \core_search\engine {
         }
 
         $numdocsignored += $this->batch_add_documents(false, true, true);
+        $this->get_semantic_indexer()?->flush();
         $numdocs = $numrecords - $numdocsignored;
 
         if (method_exists($this, 'supports_add_document_batch')) {
@@ -1221,6 +1266,9 @@ class engine extends \core_search\engine {
             $needschunking = (count($contentchunks)) > 1;
         }
 
+        $this->add_to_semantic_index($docdata, $needschunking ? $contentchunks : []);
+        $this->get_semantic_indexer()?->flush();
+
         if (!$needschunking) {
             $url = $this->get_url();
             $docprefix = '_';
@@ -1614,6 +1662,7 @@ class engine extends \core_search\engine {
         $client = new \search_elastic\esrequest();
 
         $client->delete($deleteurl);
+        $this->get_semantic_indexer()?->delete_by_id($id);
     }
 
     /**
@@ -1629,6 +1678,7 @@ class engine extends \core_search\engine {
         $returnval = false;
 
         if ($areaid === false) {
+            $this->get_semantic_indexer()?->delete_all();
             // Delete all your search engine index contents.
             // Response will return acknowledged True if deletion worked,
             // or a status of not found if index doesn't exist.
@@ -1644,6 +1694,7 @@ class engine extends \core_search\engine {
         } else {
             // Delete all documents in a specific area.
             $this->delete_by_area($areaid);
+            $this->get_semantic_indexer()?->delete_by_area($areaid);
             $returnval = true;
         }
         return $returnval;
