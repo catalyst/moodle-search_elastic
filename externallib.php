@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use core_search\manager;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
@@ -68,6 +67,13 @@ class search_elastic_external extends external_api {
                     'List of area ids. If empty return all areas.',
                     VALUE_OPTIONAL
                 ),
+                'semantic' => new external_value(
+                    PARAM_BOOL,
+                    'Search by meaning instead of keywords. Only searches within the given courses, and only courses in the'
+                    . ' semantic search scope. Returns nothing if semantic search is disabled or unavailable.',
+                    VALUE_DEFAULT,
+                    false
+                ),
         ]);
     }
 
@@ -81,10 +87,11 @@ class search_elastic_external extends external_api {
      * @param integer $limit Limit results to this number.
      * @param array $courseids Course ids.
      * @param array $areaids Searcharea ids.
+     * @param bool $semantic Search the semantic index only (true), or the keyword index only (false).
      * @throws moodle_exception
      * @return array $docs The search results
      */
-    public static function search($q, $timestart, $timeend, $title, $limit, $courseids = [], $areaids = []) {
+    public static function search($q, $timestart, $timeend, $title, $limit, $courseids = [], $areaids = [], $semantic = false) {
         global $USER;
 
         // Parameter validation.
@@ -98,6 +105,7 @@ class search_elastic_external extends external_api {
                        'limit' => $limit,
                        'courseids' => $courseids,
                        'areaids' => $areaids,
+                       'semantic' => $semantic,
 
             ]
         );

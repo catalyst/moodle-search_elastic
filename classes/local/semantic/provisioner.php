@@ -201,7 +201,7 @@ class provisioner {
      */
     private function ensure_connector(bool $create): array {
         $name = schema::get_model_name($this->index, $this->model);
-        $this->connectorid = $this->find_by_name('/_plugins/_ml/connectors/_search', $name);
+        $this->connectorid = $this->http->find_id_by_name('/_plugins/_ml/connectors/_search', $name);
         if ($this->connectorid !== null) {
             return $this->result(self::STATE_OK, $this->connectorid);
         }
@@ -227,7 +227,7 @@ class provisioner {
      */
     private function ensure_model(bool $create): array {
         $name = schema::get_model_name($this->index, $this->model);
-        $this->modelid = $this->find_by_name('/_plugins/_ml/models/_search', $name);
+        $this->modelid = $this->http->find_id_by_name('/_plugins/_ml/models/_search', $name);
 
         if ($this->modelid === null) {
             if (!$create) {
@@ -357,26 +357,6 @@ class provisioner {
         }
 
         return $this->result(self::STATE_OK, (string) $shape);
-    }
-
-    /**
-     * Find an ML Commons resource id by exact name.
-     *
-     * @param string $path Search endpoint.
-     * @param string $name
-     * @return string|null
-     */
-    private function find_by_name(string $path, string $name): ?string {
-        [$code, $body] = $this->request('POST', $path, ['query' => ['match_phrase' => ['name' => $name]], 'size' => 10]);
-        if ($code !== 200) {
-            return null;
-        }
-        foreach ($body['hits']['hits'] ?? [] as $hit) {
-            if (($hit['_source']['name'] ?? null) === $name) {
-                return $hit['_id'];
-            }
-        }
-        return null;
     }
 
     /**

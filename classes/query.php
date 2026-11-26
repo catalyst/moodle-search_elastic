@@ -31,6 +31,8 @@
 
 namespace search_elastic;
 
+use search_elastic\local\semantic\schema;
+
 /**
  * Elasticsearch engine.
  *
@@ -74,6 +76,9 @@ class query {
 
     /** @var float Boost value for matching context (in addition to course boost) */
     const CONTEXT_BOOST = 1.5;
+
+    /** @var int Nearest neighbours fetched by a semantic query. */
+    const SEMANTIC_K = 5;
 
     /** @var int Limit max raw results returned from the search backend to this. */
     const MAX_RESULTS = 1000;
@@ -370,9 +375,11 @@ class query {
      *                          Depending on the Moodle version accessinfo could be
      *                          as true, array or object.
      *
-     * @return \search_elastic\query
+     * @param string|null $modelid Embedding model id; when given, the text clause is a semantic (neural) one.
+     *
+     * @return array
      */
-    public function get_query($filters, $accessinfo) {
+    public function get_query($filters, $accessinfo, ?string $modelid = null) {
         $query = $this->query;
         $boostedareas = $this->get_boosted_areas();
 
@@ -455,6 +462,53 @@ class query {
         if (!empty($filters->order) && ($filters->order === 'asc' || $filters->order === 'desc')) {
             $query['sort'] = ['modified' => ['order' => $filters->order]];
         }
+
+        if ($modelid !== null) {
+            $query = $this->make_semantic($query, $filters, $modelid);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Swap the keyword text clause for a neural clause; everything else (filters, boosts, order,
+     * highlighting, paging) stays as built for the keyword query.
+     *
+     * The filters move inside the neural query so they apply before the nearest neighbours are chosen.
+     *
+     * @param array $query Keyword query.
+     * @param object $filters Search filters.
+     * @param string $modelid OpenSearch ML model id that embeds the query text.
+     * @return array
+     */
+    private function make_semantic(array $query, $filters, string $modelid): array {
+        $clauses = $query['query']['bool']['filter']['bool']['must'];
+        $must = $query['query']['bool']['must'];
+        $textclause = array_shift($must);
+
+        if (!empty($filters->areaids)) {
+            // The semantic index stores areaid as an exact keyword, while the keyword index analyses it, so
+            // "mod_page" matches "mod_page-activity" there. Accept a component prefix for the same behaviour.
+            $should = [['terms' => ['areaid' => array_values($filters->areaids)]]];
+            foreach ($filters->areaids as $areaid) {
+                $should[] = ['prefix' => ['areaid' => $areaid . '-']];
+            }
+            $clauses = array_values(array_filter($clauses, fn($c) => !isset($c['terms']['areaid'])));
+            $clauses[] = ['bool' => ['should' => $should, 'minimum_should_match' => 1]];
+        }
+        // Remaining must clauses (the title) become filters too.
+        $clauses = array_merge($clauses, $must);
+
+        $query['query']['bool']['must'] = [['neural' => [schema::FIELD => [
+            'query_text' => $filters->q,
+            'model_id' => $modelid,
+            'k' => self::MAX_RESULTS,
+            'filter' => ['bool' => ['must' => $clauses]],
+        ]]]];
+        unset($query['query']['bool']['filter']);
+        // A neural clause has no terms to highlight, so highlight the keyword form of the query text.
+        $query['highlight']['highlight_query'] = $textclause;
+        $query['_source']['excludes'][] = schema::FIELD;
 
         return $query;
     }

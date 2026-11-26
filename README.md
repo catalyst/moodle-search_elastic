@@ -356,3 +356,10 @@ If you would like commercial support or would like to sponsor additional improve
 to this plugin please contact us:
 
 https://www.catalyst-au.net/contact-us
+
+## Semantic search (AWS OpenSearch 3.x)
+
+1. Fill in the Bedrock settings, then open *Site administration > Plugins > Search > Elasticsearch > Semantic search setup* and run the setup. It creates the connector, model, ingest pipeline and the `semantic_<index>` index.
+2. Run search indexing. Documents of courses in the semantic scope are written to both indexes; other courses only to the normal index.
+3. The daily `semantic_sync_task` removes courses that left the scope and adds documents that are missing from the semantic index (for example after a scope change).
+4. Web service `search_elastic_search` with `semantic=true` searches only the semantic index with the same filters as a keyword search; the course scope only limits what is indexed. An empty query, a disabled feature or a failure returns no results. `semantic=false` searches the normal index only.

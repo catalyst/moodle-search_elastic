@@ -55,4 +55,24 @@ class client {
 
         return [$response->getStatusCode(), json_decode((string) $response->getBody(), true) ?? []];
     }
+
+    /**
+     * Find the id of an ML Commons resource by its exact name.
+     *
+     * @param string $path Search endpoint, e.g. /_plugins/_ml/models/_search.
+     * @param string $name
+     * @return string|null
+     */
+    public function find_id_by_name(string $path, string $name): ?string {
+        [$code, $body] = $this->request('POST', $path, ['query' => ['match_phrase' => ['name' => $name]], 'size' => 10]);
+        if ($code !== 200) {
+            return null;
+        }
+        foreach ($body['hits']['hits'] ?? [] as $hit) {
+            if (($hit['_source']['name'] ?? null) === $name) {
+                return $hit['_id'];
+            }
+        }
+        return null;
+    }
 }

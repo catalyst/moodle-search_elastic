@@ -34,6 +34,9 @@ namespace search_elastic;
 use search_elastic\local\chunking\manager;
 use search_elastic\local\chunking\fixed_size;
 use search_elastic\local\semantic\indexer;
+use search_elastic\local\semantic\model_factory;
+use search_elastic\local\semantic\client;
+use search_elastic\local\semantic\schema;
 use search_elastic\local\service\error_service;
 use stdClass;
 use Exception;
@@ -1560,9 +1563,18 @@ class engine extends \core_search\engine {
      * @return array $docs
      */
     public function execute_query($filters, $accessinfo, $limit = 0) {
+        $index = $this->config->index;
+        $modelid = null;
+        if (!empty($filters->semantic)) {
+            if (!($target = $this->get_semantic_target($filters))) {
+                return [];
+            }
+            [$index, $modelid] = $target;
+        }
+
         $docs = [];
         $docoffest = 0;
-        $url = $this->get_url() . '/' .  $this->config->index . '/_search';
+        $url = $this->get_url() . '/' .  $index . '/_search';
         $client = new \search_elastic\esrequest();
 
         $returnlimit = \core_search\manager::MAX_RESULTS;
@@ -1583,7 +1595,7 @@ class engine extends \core_search\engine {
         do {
             // Construct query.
             $query = new \search_elastic\query($docoffest);
-            $esquery = $query->get_query($filters, $accessinfo);
+            $esquery = $query->get_query($filters, $accessinfo, $modelid);
             $jsonquery = json_encode($esquery);
             $this->log($jsonquery);
 
@@ -1594,6 +1606,11 @@ class engine extends \core_search\engine {
             $this->log($jsonresults);
 
             $results = json_decode($jsonresults);
+            if ($responsecode != 200 && $modelid !== null) {
+                // Semantic search fails quietly, without a keyword fallback.
+                debugging("Semantic search failed: HTTP {$responsecode}", DEBUG_DEVELOPER);
+                return [];
+            }
             if ($responsecode != 200) {
                 // Something has gone wrong with getting the results from the backend.
                 // Grab the reason for the first fail, and show a notification to the user.
@@ -1640,6 +1657,30 @@ class engine extends \core_search\engine {
 
         // TODO: handle negative cases and errors.
         return $docs;
+    }
+
+    /**
+     * Work out the index and embedding model for a semantic search.
+     *
+     * @param object $filters
+     * @return array|null [index name, model id], or null when nothing can be searched. There is no keyword fallback.
+     */
+    private function get_semantic_target($filters): ?array {
+        $url = $this->get_url();
+        $q = trim((string) ($filters->q ?? ''));
+        // A neural query needs text to embed.
+        if (!indexer::is_enabled() || !$url || $q === '' || $q === '*') {
+            return null;
+        }
+        try {
+            $modelname = schema::get_model_name($this->config->index, model_factory::from_config());
+            $modelid = (new client(new esrequest(), $url))->find_id_by_name('/_plugins/_ml/models/_search', $modelname);
+        } catch (\Throwable $e) {
+            debugging('Semantic search is not available: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            return null;
+        }
+
+        return $modelid === null ? null : [schema::get_index_name($this->config->index), $modelid];
     }
 
     /**
