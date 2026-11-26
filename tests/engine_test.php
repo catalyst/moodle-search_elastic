@@ -87,6 +87,9 @@ final class engine_test extends \advanced_testcase {
         $hostname = getenv('TEST_SEARCH_ELASTIC_HOSTNAME');
         $port = getenv('TEST_SEARCH_ELASTIC_PORT');
         $index = getenv('TEST_SEARCH_ELASTIC_INDEX');
+        $signingkeyid = getenv('TEST_SEARCH_ELASTIC_SIGNING_KEYID');
+        $signingsecret = getenv('TEST_SEARCH_ELASTIC_SIGNING_SECRET');
+        $region = getenv('TEST_SEARCH_ELASTIC_REGION');
 
         if (!$hostname && defined('TEST_SEARCH_ELASTIC_HOSTNAME')) {
             $hostname = TEST_SEARCH_ELASTIC_HOSTNAME;
@@ -97,6 +100,15 @@ final class engine_test extends \advanced_testcase {
         if (!$index && defined('TEST_SEARCH_ELASTIC_INDEX')) {
             $index = TEST_SEARCH_ELASTIC_INDEX;
         }
+        if (!$signingkeyid && defined('TEST_SEARCH_ELASTIC_SIGNING_KEYID')) {
+            $signingkeyid = TEST_SEARCH_ELASTIC_SIGNING_KEYID;
+        }
+        if (!$signingsecret && defined('TEST_SEARCH_ELASTIC_SIGNING_SECRET')) {
+            $signingsecret = TEST_SEARCH_ELASTIC_SIGNING_SECRET;
+        }
+        if (!$region && defined('TEST_SEARCH_ELASTIC_REGION')) {
+            $region = TEST_SEARCH_ELASTIC_REGION;
+        }
 
         if (!$hostname || !$port || !$index) {
             $this->markTestSkipped('Elastic extension test server not set.');
@@ -105,6 +117,15 @@ final class engine_test extends \advanced_testcase {
         set_config('hostname', $hostname, 'search_elastic');
         set_config('port', $port, 'search_elastic');
         set_config('index', $index, 'search_elastic');
+
+        // Only enable signing when all signing values are provided.
+        if ($signingkeyid && $signingsecret && $region) {
+            set_config('signing', 1, 'search_elastic');
+            set_config('signingkeyid', $signingkeyid, 'search_elastic');
+            set_config('signingsecretkey', $signingsecret, 'search_elastic');
+            set_config('region', $region, 'search_elastic');
+        }
+
 
         $this->generator = self::getDataGenerator()->get_plugin_generator('core_search');
         $this->generator->setup();

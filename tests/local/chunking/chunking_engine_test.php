@@ -81,6 +81,9 @@ final class chunking_engine_test extends advanced_testcase {
         $hostname = getenv('TEST_SEARCH_ELASTIC_HOSTNAME');
         $port = getenv('TEST_SEARCH_ELASTIC_PORT');
         $index = getenv('TEST_SEARCH_ELASTIC_INDEX');
+        $signingkeyid = getenv('TEST_SEARCH_ELASTIC_SIGNING_KEYID');
+        $signingsecret = getenv('TEST_SEARCH_ELASTIC_SIGNING_SECRET');
+        $region = getenv('TEST_SEARCH_ELASTIC_REGION');
 
         if (!$hostname && defined('TEST_SEARCH_ELASTIC_HOSTNAME')) {
             $hostname = TEST_SEARCH_ELASTIC_HOSTNAME;
@@ -92,6 +95,16 @@ final class chunking_engine_test extends advanced_testcase {
             $index = TEST_SEARCH_ELASTIC_INDEX;
         }
 
+        if (!$signingkeyid && defined('TEST_SEARCH_ELASTIC_SIGNING_KEYID')) {
+            $signingkeyid = TEST_SEARCH_ELASTIC_SIGNING_KEYID;
+        }
+        if (!$signingsecret && defined('TEST_SEARCH_ELASTIC_SIGNING_SECRET')) {
+            $signingsecret = TEST_SEARCH_ELASTIC_SIGNING_SECRET;
+        }
+        if (!$region && defined('TEST_SEARCH_ELASTIC_REGION')) {
+            $region = TEST_SEARCH_ELASTIC_REGION;
+        }
+
         if (!$hostname || !$port || !$index) {
             $this->markTestSkipped('Elastic extension test server not set.');
         }
@@ -99,6 +112,14 @@ final class chunking_engine_test extends advanced_testcase {
         set_config('hostname', $hostname, 'search_elastic');
         set_config('port', $port, 'search_elastic');
         set_config('index', $index, 'search_elastic');
+
+        // Only enable signing when all signing values are provided.
+        if ($signingkeyid && $signingsecret && $region) {
+            set_config('signing', 1, 'search_elastic');
+            set_config('signingkeyid', $signingkeyid, 'search_elastic');
+            set_config('signingsecretkey', $signingsecret, 'search_elastic');
+            set_config('region', $region, 'search_elastic');
+        }
         set_config('enablechunking', 1, 'search_elastic');
         set_config('chunkingstrategy', 'search_elastic\\local\\chunking\\fixed_size', 'search_elastic');
         set_config('fs_chunkmaxsize', 2000, 'search_elastic');
@@ -782,10 +803,10 @@ final class chunking_engine_test extends advanced_testcase {
      * @return array
      */
     private function get_indexed_document(array $matchparams): array {
-        $index = get_config('index', 'search_elastic');
+        $index = get_config('search_elastic', 'index');
         $indexurl = $this->engine->get_url() . '/' . $index . '/_search';
 
-        $query = ['query' => ['bool' => ['must' => $matchparams]]];
+        $query = ['size' => 100, 'query' => ['bool' => ['must' => $matchparams]]];
         $jsonquery = json_encode($query);
 
         $client = new esrequest();
@@ -800,7 +821,10 @@ final class chunking_engine_test extends advanced_testcase {
             } else {
                 $totalhits = $results->hits->total;
             }
-            $returnarray = [$totalhits, $results->hits->hits];
+            // Equal scores come back in shard order, so sort by chunk to make the order deterministic.
+            $hits = $results->hits->hits;
+            usort($hits, fn($a, $b) => (int) ($a->_source->chunk_number ?? 0) <=> (int) ($b->_source->chunk_number ?? 0));
+            $returnarray = [$totalhits, $hits];
         }
         return $returnarray;
     }

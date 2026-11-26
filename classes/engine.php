@@ -223,7 +223,7 @@ class engine extends \core_search\engine {
      *
      * @return object Apache Lucene version details.
      */
-    private function get_es_version_details() {
+    protected function get_es_version_details() {
         $url = $this->get_url();
         $client = new \search_elastic\esrequest();
         $response = $client->get($url);
@@ -488,7 +488,7 @@ class engine extends \core_search\engine {
      * @return bool
      */
     private function delete_by_query(array $queryfilter, string $description): bool {
-        $url = $this->get_url() . '/' . $this->config->index . '/_delete_by_query';
+        $url = $this->get_url() . '/' . $this->config->index . '/_delete_by_query?conflicts=proceed';
         $client = new esrequest();
         $query = ['query' => $queryfilter];
 
